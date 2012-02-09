@@ -99,31 +99,21 @@ public class XlsCellInfo {
     private void updateCellComment(Cell cell) {
         if( comment != null ){
             Workbook wb = cell.getSheet().getWorkbook();
-            if( wb instanceof HSSFWorkbook ){
-                updateHSSFComment( cell );
-            }else{
-                updateOOXMLComment( cell );
-            }
+            Sheet sheet = cell.getSheet();
+            Drawing drawing = sheet.createDrawingPatriarch();
+            CreationHelper factory = wb.getCreationHelper();
+            ClientAnchor anchor = factory.createClientAnchor();
+            anchor.setCol1(4);
+            anchor.setCol2(6);
+            anchor.setRow1(2);
+            anchor.setRow2(5);
+            Comment comment = drawing.createCellComment(anchor);
+            comment.setString(commentString);
+            comment.setAuthor(commentAuthor);
+            cell.setCellComment( comment );
         }
     }
 
-    private void updateHSSFComment(Cell cell) {
-        HSSFSheet sheet = (HSSFSheet) cell.getSheet();
-        CreationHelper helper = cell.getSheet().getWorkbook().getCreationHelper();
-        HSSFPatriarch patr = sheet.createDrawingPatriarch();
-        Comment comment = patr.createComment( new HSSFClientAnchor(0, 0, 0, 0, (short)4, 2, (short) 6, 5));
-        comment.setString( commentString );
-        comment.setAuthor( commentAuthor );
-        cell.setCellComment( comment );        
-    }
-
-    private void updateOOXMLComment(Cell cell) {
-        CreationHelper helper = cell.getSheet().getWorkbook().getCreationHelper();
-        Comment comment = ((XSSFSheet)cell.getSheet()).createComment();
-        comment.setString( commentString );
-        comment.setAuthor( commentAuthor );
-        cell.setCellComment( comment );
-    }
 
     private void updateCellContents(Cell cell) {
         switch( cellType ){
