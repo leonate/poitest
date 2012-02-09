@@ -22,6 +22,7 @@ public class MergedCellTest {
     public static final String TEMPLATE_FILE_NAME = "mergedcells.xlsx";
     public static final String MODIFIED_FILE_NAME = "target/mergedcells_modified.xlsx";
     public static final String MODIFIED_FILE_NAME2 = "target/mergedcells_modified2.xlsx";
+    public static final String MODIFIED_FILE_NAME3 = "target/mergedcells_modified3.xlsx";
 
     InputStream templateInputStream;
     Workbook workbook;
@@ -93,6 +94,18 @@ public class MergedCellTest {
         Assert.assertEquals(0, sheet.getNumMergedRegions());
         OutputStream resultStream = new FileOutputStream( MODIFIED_FILE_NAME2 );
         workbook.write( resultStream );
+        resultStream.close();
+    }
+
+    @Test
+    public void nestedMergedRegions() throws IOException {
+        Sheet sheet = workbook.getSheetAt(0);
+        Assert.assertEquals(1, sheet.getNumMergedRegions());
+        sheet.removeMergedRegion(0);
+        sheet.addMergedRegion(new CellRangeAddress(0,1,0,2));
+        Assert.assertEquals(1, sheet.getNumMergedRegions());
+        OutputStream resultStream = new FileOutputStream( MODIFIED_FILE_NAME3 );
+        workbook.write(resultStream);
         resultStream.close();
     }
     
