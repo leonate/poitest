@@ -1,9 +1,6 @@
 package org.poitest;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Comment;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.*;
 
 import static org.junit.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
@@ -53,5 +50,23 @@ public class Util {
         Cell cell = row.getCell( cellNum );
         cellInfo.readCell( cell );
         return cellInfo;
+    }
+
+    public static void setCellComment(Cell cell, String commentText, String commentAuthor, ClientAnchor anchor){
+        Sheet sheet = cell.getSheet();
+        Workbook wb = sheet.getWorkbook();
+        Drawing drawing = sheet.createDrawingPatriarch();
+        CreationHelper factory = wb.getCreationHelper();
+        if( anchor == null ){
+            anchor = factory.createClientAnchor();
+            anchor.setCol1(cell.getColumnIndex() + 1);
+            anchor.setCol2(cell.getColumnIndex() + 3);
+            anchor.setRow1(cell.getRowIndex());
+            anchor.setRow2(cell.getRowIndex() + 2);
+        }
+        Comment comment = drawing.createCellComment(anchor);
+        comment.setString(factory.createRichTextString(commentText));
+        comment.setAuthor(commentAuthor != null ? commentAuthor : "");
+        cell.setCellComment( comment );
     }
 }
